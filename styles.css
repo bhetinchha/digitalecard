@@ -108,3 +108,8 @@ footer { padding: 20px 12px; background: #102b50; color: #dce8f6; text-align: ce
 .auth-security { margin-top:25px; }
 .auth-help { font-size:11px;color:#71839b;margin:-8px 0 0; }
 @media(max-width:680px){.auth-layout{grid-template-columns:1fr;min-height:0}.auth-aside{display:none}.auth-main{padding:25px 20px 28px}.auth-modal{border-radius:18px}.auth-tabs{margin-top:20px}}
+
+/* Clear, accessible registration verification guidance. */
+.verification-notice { background:#eef5ff; border:1px solid #b8d4f5; color:#12345b; border-radius:12px; padding:14px 16px; margin:14px 0; line-height:1.55; }
+.verification-notice strong { display:block; font-weight:750; margin-bottom:5px; }
+.verification-notice p { margin:0; font-size:0.9rem; }
