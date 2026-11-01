@@ -11,24 +11,35 @@
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <header class="topbar">
     <div class="brand"><span class="brand-icon">▣</span><div><strong>Digital Business Card</strong><small>Scan. Save. Search. Connect.</small></div></div>
+    <button id="headerLoginButton" class="button small header-login" hidden>Login / Register</button>
     <button id="menuButton" class="icon-button" aria-label="Toggle navigation">☰</button>
   </header>
-  <div class="shell">
+  <section id="publicLanding" class="public-landing" hidden>
+  <div class="landing-inner">
+    <p class="eyebrow">DIGITAL BUSINESS CARD PLATFORM</p>
+    <h1>Your Identity. One Digital Card.</h1>
+    <p>Create, share and organize professional connections. Your private visiting cards stay private.</p>
+    <div class="landing-actions"><button id="getStartedButton" class="button">Create My Card</button><button id="publicExploreButton" class="button outline">Explore Directory</button></div>
+    <div class="landing-features"><article><strong>▣ Digital Identity</strong><p>Build your own digital profile.</p></article><article><strong>▤ Private Card Wallet</strong><p>Save and search visiting cards.</p></article><article><strong>⌕ Public Directory</strong><p>Explore consent-based published cards.</p></article></div>
+    <p class="hint">Starter preview: accounts are local to this browser. Secure login and Google Sheets sync are not yet connected.</p>
+  </div>
+</section>
+<div class="shell" id="appShell">
     <nav id="navigation" class="navigation" aria-label="Main navigation">
       <button class="nav-link active" data-view="profile">◉ My Digital Card</button>
       <button class="nav-link" data-view="wallet">▤ My Card Wallet</button>
       <button class="nav-link" data-view="explore">⌕ Explore Directory</button>
-      <button class="nav-link" data-view="company">▦ Company</button>
-      <button class="nav-link" data-view="admin">⚙ Super Admin</button>
-      <div class="nav-bottom"><button id="loginButton" class="button outline small">Login</button><button id="logoutButton" class="button outline small" hidden>Logout</button></div>
+      <button class="nav-link" data-view="company" id="companyNav" hidden>▦ Company</button>
+      <button class="nav-link" data-view="admin" id="adminNav" hidden>⚙ Super Admin</button>
+      <div class="nav-bottom"><span id="sessionLabel" class="session-label"></span><button id="loginButton" class="button outline small">Login</button><button id="logoutButton" class="button outline small" hidden>Logout</button></div>
     </nav>
     <main id="mainContent" class="content">
       <section id="profile" class="view active">
         <div class="section-heading"><div><p class="eyebrow">YOUR DIGITAL IDENTITY</p><h1>My Digital Card</h1><p>Beautiful, shareable and mobile-ready.</p></div><button id="editButton" class="button small">Edit Profile</button></div>
         <div class="card-preview">
           <div class="cover"><span class="cover-label">DIGITAL BUSINESS CARD</span><span class="language-label">EN · नेपाली</span></div>
-          <div class="portrait" id="portrait">NA</div>
-          <div class="card-details"><h2 id="displayName">Nirajan Aryal</h2><p id="displayTitle">Digital Entrepreneur</p><p id="displayCompany">Digital Business Card</p><p id="displayLocation">Kathmandu, Nepal</p></div>
+          <div class="portrait" id="portrait">DB</div>
+          <div class="card-details"><h2 id="displayName">Your Name</h2><p id="displayTitle">Your Designation</p><p id="displayCompany">Digital Business Card</p><p id="displayLocation">Your Location</p></div>
           <div class="quick-actions"><a id="callLink" class="action green" href="tel:9851113811">☎<small>Call</small></a><a id="whatsappLink" class="action lime" href="https://wa.me/9779851113811" target="_blank" rel="noopener">◉<small>WhatsApp</small></a><a id="emailLink" class="action blue" href="mailto:">✉<small>Email</small></a><a id="websiteLink" class="action purple" href="#" target="_blank" rel="noopener">◎<small>Website</small></a></div>
           <div class="info-panel"><h3>About Me</h3><p id="displayAbout">Connect smarter with a modern digital business identity.</p></div>
           <div class="info-panel"><h3>Connect with me</h3><p id="displaySocial">Share your card with a single link or QR code.</p></div>
@@ -45,7 +56,8 @@
   <footer>Designed &amp; Developed by Nirajan Aryal (9851113811)</footer>
   <dialog id="editorDialog" class="modal"><form id="profileForm" class="form"><div class="modal-header"><h2>Edit Digital Profile</h2><button type="button" class="close-button" data-close="editorDialog" aria-label="Close">×</button></div><label>Name<input name="name" required maxlength="100"></label><label>Designation<input name="title" maxlength="120"></label><label>Company<input name="company" maxlength="120"></label><label>Location<input name="location" maxlength="150"></label><label>Mobile<input name="phone" maxlength="24"></label><label>Email<input name="email" type="email"></label><label>Website<input name="website" type="url" placeholder="https://"></label><label>About<textarea name="about" rows="3" maxlength="700"></textarea></label><div class="modal-actions"><button type="button" class="button outline" data-close="editorDialog">Cancel</button><button type="submit" class="button" id="profileSave">Save Profile</button></div></form></dialog>
   <dialog id="uploadDialog" class="modal"><form id="uploadForm" class="form"><div class="modal-header"><h2>Add Visiting Card</h2><button type="button" class="close-button" data-close="uploadDialog" aria-label="Close">×</button></div><p class="hint">Private by default. Image uploads are limited to 2 MB per side. OCR is not included in this starter; review and enter searchable details manually.</p><label>Front image<input name="front" type="file" accept="image/jpeg,image/png,image/webp"></label><label>Back image (optional)<input name="back" type="file" accept="image/jpeg,image/png,image/webp"></label><label>Contact name<input name="name" maxlength="120" required></label><label>Business name<input name="business" maxlength="160"></label><label>Mobile<input name="phone" maxlength="24"></label><label>Email<input name="email" type="email"></label><label>Category<input name="category" maxlength="80"></label><label>Address<input name="address" maxlength="200"></label><label>Private notes<textarea name="notes" rows="2"></textarea></label><div class="modal-actions"><button type="button" class="button outline" data-close="uploadDialog">Cancel</button><button type="submit" class="button" id="uploadSave">Save to Wallet</button></div></form></dialog>
-  <dialog id="authDialog" class="modal"><form id="authForm" class="form"><div class="modal-header"><h2>Account Access</h2><button type="button" class="close-button" data-close="authDialog" aria-label="Close">×</button></div><p class="hint">This is a local-only preview. Production login needs a secure authentication provider and server verification. Never enter a real password here.</p><label>Display name<input name="display" required maxlength="80" placeholder="Your name"></label><div class="modal-actions"><button type="button" class="button outline" data-close="authDialog">Cancel</button><button type="submit" class="button">Continue Demo</button></div></form></dialog>
+  <dialog id="logoutDialog" class="modal"><div class="form"><h2>End preview session?</h2><p class="hint">Your local demo profile remains on this browser. No cloud logout is performed.</p><div class="modal-actions"><button type="button" class="button outline" data-close="logoutDialog">Cancel</button><button type="button" class="button" id="confirmLogout">Logout</button></div></div></dialog>
+  <dialog id="authDialog" class="modal"><form id="authForm" class="form"><div class="modal-header"><h2>Personal Account Preview</h2><button type="button" class="close-button" data-close="authDialog" aria-label="Close">×</button></div><p class="hint">Create or open a local demo profile. This is NOT secure authentication. Do not enter passwords or real customer information.</p><label>Your name<input name="display" required maxlength="80" placeholder="Your name"></label><label>Demo account identifier<input name="identifier" required maxlength="80" placeholder="e.g. yourname.demo"></label><p class="hint">Use the same identifier to reopen this local demo profile on this browser. It does not verify ownership.</p><div class="modal-actions"><button type="button" class="button outline" data-close="authDialog">Cancel</button><button type="submit" class="button" id="authSubmit">Continue Demo</button></div></form></dialog>
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js" defer></script>
   <script src="app.js" defer></script>
 </body>
