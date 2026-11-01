@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#10284a">
+  <title>Digital Business Card | Scan. Save. Search. Connect.</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <header class="topbar">
+    <div class="brand"><span class="brand-icon">▣</span><div><strong>Digital Business Card</strong><small>Scan. Save. Search. Connect.</small></div></div>
+    <button id="headerLoginButton" class="button small header-login" hidden>Login / Register</button>
+    <button id="menuButton" class="icon-button" aria-label="Toggle navigation">☰</button>
+  </header>
+  <section id="publicLanding" class="public-landing" hidden>
+  <div class="landing-inner">
+    <p class="eyebrow">DIGITAL BUSINESS CARD PLATFORM</p>
+    <h1>Your Identity. One Digital Card.</h1>
+    <p>Create, share and organize professional connections. Your private visiting cards stay private.</p>
+    <div class="landing-actions"><button id="getStartedButton" class="button">Create My Card</button><button id="publicExploreButton" class="button outline">Explore Directory</button></div>
+    <div class="landing-features"><article><strong>▣ Digital Identity</strong><p>Build your own digital profile.</p></article><article><strong>▤ Private Card Wallet</strong><p>Save and search visiting cards.</p></article><article><strong>⌕ Public Directory</strong><p>Explore consent-based published cards.</p></article></div>
+    <p class="hint">Create an account with email verification. Your account is stored in Google Sheets after backend setup.</p>
+  </div>
+</section>
+<div class="shell" id="appShell">
+    <nav id="navigation" class="navigation" aria-label="Main navigation">
+      <button class="nav-link active" data-view="profile">◉ My Digital Card</button>
+      <button class="nav-link" data-view="wallet">▤ My Card Wallet</button>
+      <button class="nav-link" data-view="explore">⌕ Explore Directory</button>
+      <button class="nav-link" data-view="company" id="companyNav" hidden>▦ Company</button>
+      <button class="nav-link" data-view="admin" id="adminNav" hidden>⚙ Super Admin</button>
+      <div class="nav-bottom"><span id="sessionLabel" class="session-label"></span><button id="loginButton" class="button outline small">Login</button><button id="logoutButton" class="button outline small" hidden>Logout</button></div>
+    </nav>
+    <main id="mainContent" class="content">
+      <section id="profile" class="view active">
+        <div class="section-heading"><div><p class="eyebrow">YOUR DIGITAL IDENTITY</p><h1>My Digital Card</h1><p>Beautiful, shareable and mobile-ready.</p></div><button id="editButton" class="button small">Edit Profile</button></div>
+        <div class="card-preview">
+          <div class="cover"><span class="cover-label">DIGITAL BUSINESS CARD</span><span class="language-label">EN · नेपाली</span></div>
+          <div class="portrait" id="portrait">DB</div>
+          <div class="card-details"><h2 id="displayName">Your Name</h2><p id="displayTitle">Your Designation</p><p id="displayCompany">Digital Business Card</p><p id="displayLocation">Your Location</p></div>
+          <div class="quick-actions"><a id="callLink" class="action green" href="tel:9851113811">☎<small>Call</small></a><a id="whatsappLink" class="action lime" href="https://wa.me/9779851113811" target="_blank" rel="noopener">◉<small>WhatsApp</small></a><a id="emailLink" class="action blue" href="mailto:">✉<small>Email</small></a><a id="websiteLink" class="action purple" href="#" target="_blank" rel="noopener">◎<small>Website</small></a></div>
+          <div class="info-panel"><h3>About Me</h3><p id="displayAbout">Connect smarter with a modern digital business identity.</p></div>
+          <div class="info-panel"><h3>Connect with me</h3><p id="displaySocial">Share your card with a single link or QR code.</p></div>
+          <div class="stack"><button id="vcardButton" class="button outline full">▣ Save Contact (vCard)</button><button id="shareButton" class="button outline full">↗ Share Profile Link</button><button id="qrButton" class="button full">▦ Show QR Code</button></div>
+          <div id="qrPanel" class="qr-panel" hidden><div id="qrCanvas"></div><p>Scan to open this card</p></div>
+        </div>
+      </section>
+      <section id="wallet" class="view"><div class="section-heading"><div><p class="eyebrow">PRIVATE BY DEFAULT</p><h1>My Card Wallet</h1><p>Upload, search and manage visiting cards.</p></div><button id="addCardButton" class="button small">+ Add Card</button></div><div class="search-box"><input id="walletSearch" placeholder="Search name, mobile, business, category..." aria-label="Search saved cards"></div><div id="walletList" class="cards-grid"></div></section>
+      <section id="explore" class="view"><div class="section-heading"><div><p class="eyebrow">PUBLIC BUSINESS DIRECTORY</p><h1>Explore Cards</h1><p>Only cards published with the owner's permission appear here.</p></div></div><div class="search-box"><input id="directorySearch" placeholder="Search public businesses..." aria-label="Search directory"></div><div id="directoryList" class="cards-grid"></div></section>
+      <section id="company" class="view"><div class="section-heading"><div><p class="eyebrow">ORGANIZATIONS</p><h1>Company Dashboard</h1></div></div><div class="empty-state"><h3>Company workspace</h3><p>Company creation, employee invitations and team billing are planned for a later release. No inactive buttons are shown.</p></div></section>
+      <section id="admin" class="view"><div class="section-heading"><div><p class="eyebrow">PLATFORM ADMINISTRATION</p><h1>Super Admin</h1></div></div><div class="empty-state"><h3>Restricted workspace</h3><p>Platform administration requires verified server-side roles. This starter does not grant administrative access.</p></div></section>
+    </main>
+  </div>
+  <footer>Designed &amp; Developed by Nirajan Aryal (9851113811)</footer>
+  <dialog id="editorDialog" class="modal"><form id="profileForm" class="form"><div class="modal-header"><h2>Edit Digital Profile</h2><button type="button" class="close-button" data-close="editorDialog" aria-label="Close">×</button></div><label>Name<input name="name" required maxlength="100"></label><label>Designation<input name="title" maxlength="120"></label><label>Company<input name="company" maxlength="120"></label><label>Location<input name="location" maxlength="150"></label><label>Mobile<input name="phone" maxlength="24"></label><label>Email<input name="email" type="email"></label><label>Website<input name="website" type="url" placeholder="https://"></label><label>About<textarea name="about" rows="3" maxlength="700"></textarea></label><div class="modal-actions"><button type="button" class="button outline" data-close="editorDialog">Cancel</button><button type="submit" class="button" id="profileSave">Save Profile</button></div></form></dialog>
+  <dialog id="uploadDialog" class="modal"><form id="uploadForm" class="form"><div class="modal-header"><h2>Add Visiting Card</h2><button type="button" class="close-button" data-close="uploadDialog" aria-label="Close">×</button></div><p class="hint">Private by default. Image uploads are limited to 2 MB per side. OCR is not included in this starter; review and enter searchable details manually.</p><label>Front image<input name="front" type="file" accept="image/jpeg,image/png,image/webp"></label><label>Back image (optional)<input name="back" type="file" accept="image/jpeg,image/png,image/webp"></label><label>Contact name<input name="name" maxlength="120" required></label><label>Business name<input name="business" maxlength="160"></label><label>Mobile<input name="phone" maxlength="24"></label><label>Email<input name="email" type="email"></label><label>Category<input name="category" maxlength="80"></label><label>Address<input name="address" maxlength="200"></label><label>Private notes<textarea name="notes" rows="2"></textarea></label><div class="modal-actions"><button type="button" class="button outline" data-close="uploadDialog">Cancel</button><button type="submit" class="button" id="uploadSave">Save to Wallet</button></div></form></dialog>
+  <dialog id="logoutDialog" class="modal"><div class="form"><h2>End preview session?</h2><p class="hint">Your local demo profile remains on this browser. No cloud logout is performed.</p><div class="modal-actions"><button type="button" class="button outline" data-close="logoutDialog">Cancel</button><button type="button" class="button" id="confirmLogout">Logout</button></div></div></dialog>
+  <dialog id="authDialog" class="modal auth-modal">
+    <div class="auth-layout">
+      <aside class="auth-aside"><div class="auth-mark">▣</div><p class="eyebrow">DIGITAL BUSINESS CARD</p><h2>Make every connection count.</h2><p>One secure identity for your digital card and professional network.</p><div class="auth-aside-foot">Scan. Save. Search. Connect.</div></aside>
+      <div class="auth-main">
+        <button type="button" class="close-button auth-close" data-close="authDialog" aria-label="Close">×</button>
+        <div class="auth-tabs" role="tablist"><button type="button" data-auth-tab="login" class="active">Sign in</button><button type="button" data-auth-tab="register">Create account</button></div>
+        <form id="loginForm" class="auth-form"><h2>Welcome back</h2><p class="auth-sub">Sign in to manage your digital identity.</p><label>Email address<input type="email" name="email" autocomplete="username" placeholder="you@example.com" required></label><label>Password<div class="password-field"><input type="password" name="password" autocomplete="current-password" required><button type="button" class="password-toggle" aria-label="Show password">Show</button></div></label><div class="auth-link-row"><button type="button" class="text-link" data-auth-tab="forgot">Forgot password?</button></div><button type="submit" class="button full">Sign in securely</button><p class="auth-bottom">New here? <button type="button" class="text-link" data-auth-tab="register">Create an account</button></p></form>
+        <form id="registerForm" class="auth-form" hidden><h2>Create your account</h2><p class="auth-sub">Start with a personal workspace. Join a company later.</p><label>Full name<input name="name" maxlength="100" autocomplete="name" required></label><label>Email address<input type="email" name="email" autocomplete="email" required></label><label>Password<div class="password-field"><input type="password" name="password" minlength="12" maxlength="128" autocomplete="new-password" required><button type="button" class="password-toggle" aria-label="Show password">Show</button></div></label><p class="auth-help">At least 12 characters, including letters and numbers.</p><button type="submit" class="button full">Send verification code</button><p class="auth-bottom">Already registered? <button type="button" class="text-link" data-auth-tab="login">Sign in</button></p></form>
+        <form id="verifyForm" class="auth-form" hidden><h2>Verify your email</h2><p class="auth-sub">Enter the 6-digit code sent to <strong id="verifyEmail"></strong>.</p><label>Verification code<input name="otp" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" placeholder="000000" required></label><button type="submit" class="button full">Verify & create account</button><button type="button" class="text-link" id="resendOtp">Resend code</button></form>
+        <form id="forgotForm" class="auth-form" hidden><h2>Reset password</h2><p class="auth-sub">We will email you a one-time reset code.</p><label>Registered email<input type="email" name="email" autocomplete="email" required></label><button type="submit" class="button full">Send reset code</button><button type="button" class="text-link" data-auth-tab="login">Back to sign in</button></form>
+        <form id="resetForm" class="auth-form" hidden><h2>Set new password</h2><p class="auth-sub">Enter your email code and choose a new password.</p><label>6-digit email code<input name="otp" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" required></label><label>New password<div class="password-field"><input type="password" name="password" minlength="12" maxlength="128" autocomplete="new-password" required><button type="button" class="password-toggle" aria-label="Show password">Show</button></div></label><button type="submit" class="button full">Reset password</button><button type="button" class="text-link" data-auth-tab="forgot">Resend reset code</button></form>
+        <p class="auth-security">🔒 Email verified • Protected session • Private by default</p>
+      </div>
+    </div>
+  </dialog>
+  <script src="config.js" defer></script>
+  <script src="api.js" defer></script>
+  <script src="auth.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js" defer></script>
+  <script src="app.js" defer></script>
+</body>
+</html>
