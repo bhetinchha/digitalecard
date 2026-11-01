@@ -64,6 +64,7 @@ function notify(message, kind = '') {
 
   if (activeDialog) {
     pageToast.className = 'toast';
+    pageToast.textContent = '';
     const host = activeDialog.id === 'authDialog'
       ? activeDialog.querySelector('.auth-main')
       : activeDialog;
@@ -81,6 +82,7 @@ function notify(message, kind = '') {
       }
     }
     notice.textContent = String(message || 'Something went wrong.');
+    if (activeDialog.id === 'authDialog') { host.scrollTop = 0; }
     notice.className = `dialog-feedback show ${kind}`;
     toastTimeout = setTimeout(() => notice.classList.remove('show'), kind === 'error' ? 9000 : 6000);
     return;
