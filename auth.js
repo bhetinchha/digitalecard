@@ -42,9 +42,12 @@ window.AuthUI = (() => {
     });});
     $('#registerForm').addEventListener('submit',e=>{e.preventDefault();submit(e.target,async f=>{
       pendingEmail=String(f.get('email')).trim().toLowerCase();
-      registration={name:f.get('name'),email:pendingEmail,password:f.get('password')};
+      if (f.get('password') !== f.get('confirmPassword')) {
+        throw new Error('Passwords do not match.');
+      }
+      registration={name:f.get('name'),email:pendingEmail,mobile:String(f.get('mobile')).trim(),password:f.get('password'),confirmPassword:f.get('confirmPassword')};
       const result=await DBC_API.request({action:'register',...registration});
-      registration.password=''; // avoid retaining the raw password after request
+      registration=null; // do not retain credentials after request
       $('#verifyEmail').textContent=pendingEmail;tab('verify');notify(result.message,'success');
     });});
     $('#verifyForm').addEventListener('submit',e=>{e.preventDefault();submit(e.target,async f=>{
