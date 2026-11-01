@@ -55,11 +55,40 @@ function loadDemoAccount(identifier, display) {
 
 
 function notify(message, kind = '') {
-  const toast = $('#toast');
-  toast.textContent = message;
-  toast.className = `toast show ${kind}`;
+  // A native <dialog> is in the browser's top layer. Page-level toasts
+  // render BEHIND it, regardless of z-index. Put feedback inside the
+  // active dialog instead; otherwise retain the existing page toast.
+  const activeDialog = [...document.querySelectorAll('dialog[open]')].at(-1);
+  const pageToast = $('#toast');
   clearTimeout(toastTimeout);
-  toastTimeout = setTimeout(() => { toast.className = 'toast'; }, 3800);
+
+  if (activeDialog) {
+    pageToast.className = 'toast';
+    const host = activeDialog.id === 'authDialog'
+      ? activeDialog.querySelector('.auth-main')
+      : activeDialog;
+    let notice = host.querySelector('.dialog-feedback');
+    if (!notice) {
+      notice = document.createElement('div');
+      notice.className = 'dialog-feedback';
+      notice.setAttribute('role', 'alert');
+      notice.setAttribute('aria-live', 'assertive');
+      if (activeDialog.id === 'authDialog') {
+        const tabs = host.querySelector('.auth-tabs');
+        tabs.insertAdjacentElement('afterend', notice);
+      } else {
+        host.prepend(notice);
+      }
+    }
+    notice.textContent = String(message || 'Something went wrong.');
+    notice.className = `dialog-feedback show ${kind}`;
+    toastTimeout = setTimeout(() => notice.classList.remove('show'), kind === 'error' ? 9000 : 6000);
+    return;
+  }
+
+  pageToast.textContent = String(message || 'Something went wrong.');
+  pageToast.className = `toast show ${kind}`;
+  toastTimeout = setTimeout(() => { pageToast.className = 'toast'; }, kind === 'error' ? 9000 : 5000);
 }
 
 async function withBusy(button, operation) {
