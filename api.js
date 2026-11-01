@@ -23,14 +23,16 @@ window.DBC_API = Object.freeze({
       const clean = () => { clearTimeout(timer); window.removeEventListener('message', onMessage); form.remove(); frame.remove(); };
       const onMessage = (event) => {
         if (!/^https:\/\/(script\.google\.com|script\.googleusercontent\.com|[a-z0-9-]+\.googleusercontent\.com)$/.test(event.origin)) return;
-        if (event.source !== frame.contentWindow || !event.data || event.data.nonce !== nonce) return;
+        // Apps Script may wrap HtmlService in a nested iframe; its source is not always frame.contentWindow.
+        // A cryptographically random, per-request nonce and a trusted Google origin identify the reply.
+        if (!event.data || event.data.nonce !== nonce) return;
         const data = event.data;
         clean();
         if (data.ok) resolve(data.data);
         else reject(new Error(data.error || 'Request failed.'));
       };
       window.addEventListener('message',onMessage);
-      timer = setTimeout(() => {clean();reject(new Error('Request timed out. Check Apps Script deployment and permissions.'));},DBC_CONFIG.requestTimeoutMs);
+      timer = setTimeout(() => {clean();reject(new Error('Server response was not received. Check Apps Script deployment, access settings and execution logs. Please do not submit repeatedly.'));},DBC_CONFIG.requestTimeoutMs);
       document.body.append(frame,form);
       form.submit();
     });
