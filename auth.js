@@ -14,14 +14,33 @@ window.AuthUI = (() => {
   const forms = ['login','register','verify','forgot','reset'];
   const $ = (selector) => document.querySelector(selector);
   function tab(name) {
+    clearFeedback();
     forms.forEach(item => { $('#'+item+'Form').hidden = item!==name; });
     if (name === 'verify') $('#verificationNotice').hidden = false;
     document.querySelectorAll('[data-auth-tab]').forEach(b => b.classList.toggle('active',b.dataset.authTab===name));
+  }
+  function clearFeedback() {
+    document.querySelectorAll('#authDialog .dialog-feedback').forEach(el => { el.classList.remove('show'); el.textContent = ''; });
+    document.querySelectorAll('#authDialog .field-error').forEach(el => el.remove());
+    document.querySelectorAll('#authDialog .invalid-field').forEach(el => el.classList.remove('invalid-field'));
+  }
+  function fieldError(form, name, message) {
+    const input = form.querySelector(`[name="${name}"]`);
+    if (!input) { notify(message, 'error'); return; }
+    input.classList.add('invalid-field');
+    const error = document.createElement('span');
+    error.className = 'field-error';
+    error.setAttribute('role', 'alert');
+    error.textContent = message;
+    input.closest('label').appendChild(error);
+    input.focus();
+    input.addEventListener('input', () => { error.remove(); input.classList.remove('invalid-field'); }, { once: true });
   }
   function open(name='login') { tab(name); $('#authDialog').showModal(); }
   async function submit(form, action) {
     const button=form.querySelector('button[type=submit]');
     if(button.disabled)return;
+    clearFeedback();
     const previous=button.textContent;
     button.disabled=true;button.textContent='Please wait…';
     try { await action(new FormData(form)); }
@@ -63,7 +82,8 @@ window.AuthUI = (() => {
     $('#registerForm').addEventListener('submit',e=>{e.preventDefault();submit(e.target,async f=>{
       pendingEmail=String(f.get('email')).trim().toLowerCase();
       if (f.get('password') !== f.get('confirmPassword')) {
-        throw new Error('Passwords do not match.');
+        fieldError(e.target, 'confirmPassword', 'Passwords do not match. Please enter the same password.');
+        return;
       }
       registration={name:f.get('name'),email:pendingEmail,mobile:String(f.get('mobile')).trim(),password:f.get('password'),confirmPassword:f.get('confirmPassword')};
       const result=await DBC_API.request({action:'register',...registration});
@@ -72,8 +92,13 @@ window.AuthUI = (() => {
       notify('Verification email sent. Enter your 6-digit code to activate your account.', 'success');
     });});
     $('#verifyForm').addEventListener('submit',e=>{e.preventDefault();submit(e.target,async f=>{
-      const session=await DBC_API.request({action:'verifyRegister',email:pendingEmail,otp:f.get('otp')});
-      registration=null;verificationPending=false;enter(session);
+      await DBC_API.request({action:'verifyRegister',email:pendingEmail,otp:f.get('otp')});
+      registration=null;verificationPending=false;
+      e.target.reset();
+      tab('login');
+      $('#loginForm').reset();
+      notify('Email verified successfully! Your account is active. Please enter your email and password to sign in.', 'success');
+      $('#loginForm').querySelector('[name=email]').focus();
     });});
     $('#resendOtp').addEventListener('click',()=>{
       tab('register');
@@ -87,7 +112,7 @@ window.AuthUI = (() => {
     });});
     $('#resetForm').addEventListener('submit',e=>{e.preventDefault();submit(e.target,async f=>{
       const result=await DBC_API.request({action:'reset',email:pendingEmail,otp:f.get('otp'),password:f.get('password')});
-      e.target.reset();tab('login');notify(result.message,'success');
+      e.target.reset();tab('login');$('#loginForm').reset();notify(result.message || 'Password changed. Please sign in with your new password.', 'success');
     });});
     const token=sessionStorage.getItem('dbc_session');
     if(token){
