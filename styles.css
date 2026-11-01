@@ -63,3 +63,17 @@ footer { padding: 20px 12px; background: #102b50; color: #dce8f6; text-align: ce
 .toast.show { opacity: 1; transform: none; }.toast.error { background: #a12b3e; }.toast.success { background: #087a59; }
 @media (max-width: 780px) { .icon-button { display: block; }.shell { display: block; }.navigation { display: none; width: 100%; border-right: 0; border-bottom: 1px solid #e2e8f1; }.navigation.open { display: flex; }.content { padding: 18px 12px 26px; }.section-heading { margin-bottom: 18px; }.card-preview { border-radius: 20px; }.quick-actions { gap: 7px; padding-inline: 12px; }.info-panel { margin-inline: 12px; }.stack { padding-inline: 12px; } }
 @media (max-width: 350px) { .brand-icon { display: none; }.action { min-height: 64px; }.action small { font-size: 10px; }.card-details h2 { font-size: 24px; } }
+
+/* v0.2: public entry and role-aware demo workspace; existing card design unchanged. */
+[hidden] { display: none !important; }
+.public-landing { min-height: calc(100dvh - 135px); padding: clamp(36px, 7vw, 90px) 20px; background: linear-gradient(135deg,#eef4fd,#fff); }
+.landing-inner { max-width: 1050px; margin: auto; text-align: center; }
+.landing-inner h1 { font-size: clamp(30px,5vw,54px); color: #102b50; }
+.landing-inner > p { color: #566c88; max-width: 690px; margin: 14px auto 24px; line-height: 1.6; }
+.landing-actions { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+.landing-features { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 16px; margin: 48px auto 22px; text-align: left; }
+.landing-features article { background: #fff; padding: 24px; border: 1px solid #e1e9f3; border-radius: 18px; }
+.landing-features p { color: #687a92; font-size: 13px; margin: 8px 0 0; }
+.session-label { display: block; font-size: 12px; color: #52637a; margin: 0 0 10px; overflow-wrap: anywhere; }
+.header-login { background: #fff; color: #102b50; border-color: #fff; }
+@media(max-width:600px) { .landing-features { grid-template-columns: 1fr; gap: 10px; margin-top: 28px; } .landing-features article { padding: 16px; } }
