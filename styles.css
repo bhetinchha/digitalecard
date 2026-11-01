@@ -134,3 +134,8 @@ footer { padding: 20px 12px; background: #102b50; color: #dce8f6; text-align: ce
 .dialog-feedback.error { border-color: #f0bcc5; background: #fff0f2; color: #92263a; }
 .dialog-feedback.success { border-color: #b5e0cd; background: #eaf8f1; color: #116847; }
 .dialog-feedback.warning { border-color: #f0d69a; background: #fff8e7; color: #805511; }
+
+/* v0.8: inline field validation and modal-first feedback. */
+.auth-form .invalid-field { border-color:#bd3149 !important; outline:2px solid #f5ccd3; outline-offset:1px; }
+.auth-form .field-error { display:block; color:#a1233a; font-size:12px; font-weight:600; margin-top:6px; line-height:1.5; }
+.auth-main .dialog-feedback.show { position:sticky; top:0; z-index:20; box-shadow:0 5px 18px #102c4d1a; }
