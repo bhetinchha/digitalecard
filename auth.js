@@ -2,10 +2,20 @@
 window.AuthUI = (() => {
   let pendingEmail = '';
   let registration = null;
+  let verificationPending = false;
+  function showVerification(email) {
+    pendingEmail = email;
+    verificationPending = true;
+    $('#verifyEmail').textContent = email;
+    $('#verifyForm').reset();
+    tab('verify');
+    $('#verifyForm').querySelector('[name=otp]').focus();
+  }
   const forms = ['login','register','verify','forgot','reset'];
   const $ = (selector) => document.querySelector(selector);
   function tab(name) {
     forms.forEach(item => { $('#'+item+'Form').hidden = item!==name; });
+    if (name === 'verify') $('#verificationNotice').hidden = false;
     document.querySelectorAll('[data-auth-tab]').forEach(b => b.classList.toggle('active',b.dataset.authTab===name));
   }
   function open(name='login') { tab(name); $('#authDialog').showModal(); }
@@ -38,7 +48,17 @@ window.AuthUI = (() => {
       button.textContent=input.type==='password'?'Show':'Hide';
     }));
     $('#loginForm').addEventListener('submit',e=>{e.preventDefault();submit(e.target,async f=>{
-      const session=await DBC_API.request({action:'login',email:f.get('email'),password:f.get('password')});enter(session);
+      try {
+        const session=await DBC_API.request({action:'login',email:f.get('email'),password:f.get('password')});
+        enter(session);
+      } catch (error) {
+        if (error.message.startsWith('EMAIL_NOT_VERIFIED:')) {
+          showVerification(String(f.get('email')).trim().toLowerCase());
+          notify('Your email is not verified. Enter the code we sent, or request a new one.', 'error');
+          return;
+        }
+        throw error;
+      }
     });});
     $('#registerForm').addEventListener('submit',e=>{e.preventDefault();submit(e.target,async f=>{
       pendingEmail=String(f.get('email')).trim().toLowerCase();
@@ -48,13 +68,18 @@ window.AuthUI = (() => {
       registration={name:f.get('name'),email:pendingEmail,mobile:String(f.get('mobile')).trim(),password:f.get('password'),confirmPassword:f.get('confirmPassword')};
       const result=await DBC_API.request({action:'register',...registration});
       registration=null; // do not retain credentials after request
-      $('#verifyEmail').textContent=pendingEmail;tab('verify');notify(result.message,'success');
+      showVerification(pendingEmail);
+      notify('Verification email sent. Enter your 6-digit code to activate your account.', 'success');
     });});
     $('#verifyForm').addEventListener('submit',e=>{e.preventDefault();submit(e.target,async f=>{
       const session=await DBC_API.request({action:'verifyRegister',email:pendingEmail,otp:f.get('otp')});
-      registration=null;enter(session);
+      registration=null;verificationPending=false;enter(session);
     });});
-    $('#resendOtp').addEventListener('click',()=>{tab('register');notify('Re-enter your password to request a fresh code.');});
+    $('#resendOtp').addEventListener('click',()=>{
+      tab('register');
+      $('#registerForm').querySelector('[name=email]').value=pendingEmail;
+      notify('To send a new code, enter your password and submit the registration form again.');
+    });
     $('#forgotForm').addEventListener('submit',e=>{e.preventDefault();submit(e.target,async f=>{
       pendingEmail=String(f.get('email')).trim().toLowerCase();
       const result=await DBC_API.request({action:'forgot',email:pendingEmail});
