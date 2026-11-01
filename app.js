@@ -5,12 +5,13 @@
  */
 const $ = (selector) => document.querySelector(selector);
 const DEFAULT_PROFILE = {
-  name: 'Nirajan Aryal', title: 'Digital Entrepreneur',
-  company: 'Digital Business Card', location: 'Kathmandu, Nepal',
-  phone: '9851113811', email: '', website: '',
+  name: '', title: '',
+  company: '', location: '',
+  phone: '', email: '', website: '',
   about: 'Connect smarter with a modern digital business identity.'
 };
-const STORAGE_KEY = 'dbc_local_preview_v1';
+const STORAGE_KEY = 'dbc_local_preview_v2';
+const ACCOUNT_PREFIX = 'dbc_demo_account_';
 let state = readState();
 let toastTimeout;
 
@@ -21,16 +22,37 @@ function readState() {
       profile: { ...DEFAULT_PROFILE, ...(parsed.profile || {}) },
       cards: Array.isArray(parsed.cards) ? parsed.cards : [],
       saved: Array.isArray(parsed.saved) ? parsed.saved : [],
-      demoUser: parsed.demoUser || ''
+      demoUser: parsed.demoUser || '',
+      demoId: parsed.demoId || ''
     };
   } catch (error) {
-    return { profile: { ...DEFAULT_PROFILE }, cards: [], saved: [], demoUser: '' };
+    return { profile: { ...DEFAULT_PROFILE }, cards: [], saved: [], demoUser: '', demoId: '' };
   }
 }
 
 function persist() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  if (!state.demoId) return;
+  localStorage.setItem(ACCOUNT_PREFIX + state.demoId, JSON.stringify({
+    profile: state.profile, cards: state.cards, saved: state.saved
+  }));
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({ demoUser: state.demoUser, demoId: state.demoId }));
 }
+
+function loadDemoAccount(identifier, display) {
+  const stored = JSON.parse(localStorage.getItem(ACCOUNT_PREFIX + identifier) || '{}');
+  state = {
+    profile: { ...DEFAULT_PROFILE, ...(stored.profile || {}) },
+    cards: Array.isArray(stored.cards) ? stored.cards : [],
+    saved: Array.isArray(stored.saved) ? stored.saved : [],
+    demoUser: display,
+    demoId: identifier
+  };
+  if (!state.profile.name) state.profile.name = display;
+  persist();
+  renderProfile();
+  renderWallet();
+}
+
 
 function notify(message, kind = '') {
   const toast = $('#toast');
@@ -56,6 +78,8 @@ async function withBusy(button, operation) {
 }
 
 function showView(name) {
+  if (!state.demoId && name !== 'explore') { updateLoginUI(); return; }
+  if (name === 'admin' || name === 'company') { notify('This workspace requires verified server-side permissions.', 'error'); return; }
   document.querySelectorAll('.view').forEach((view) => {
     view.classList.toggle('active', view.id === name);
   });
@@ -257,30 +281,59 @@ function bindEvents() {
     }); } catch (error) { notify('Could not generate QR.', 'error'); }
   });
   $('#loginButton').addEventListener('click', () => $('#authDialog').showModal());
+  $('#headerLoginButton').addEventListener('click', () => $('#authDialog').showModal());
+  $('#getStartedButton').addEventListener('click', () => $('#authDialog').showModal());
+  $('#publicExploreButton').addEventListener('click', () => {
+    notify('The public directory will list verified, consented cards after backend setup.', 'success');
+
+  });
   $('#authForm').addEventListener('submit', (event) => {
     event.preventDefault();
-    state.demoUser = new FormData(event.currentTarget).get('display');
-    persist();
+    const form = new FormData(event.currentTarget);
+    const display = String(form.get('display') || '').trim();
+    const identifier = String(form.get('identifier') || '').trim().toLowerCase();
+    if (!/^[a-z0-9._-]{3,80}$/.test(identifier)) {
+      notify('Use 3–80 letters, digits, dots, hyphens or underscores for the demo identifier.', 'error');
+      return;
+    }
+    loadDemoAccount(identifier, display);
     updateLoginUI();
     $('#authDialog').close();
-    notify('Local preview activated. This is not a secure login.', 'success');
+    showView('profile');
+    notify('Local demo workspace opened. This is not a secure login.', 'success');
   });
-  $('#logoutButton').addEventListener('click', async (event) => {
+  $('#logoutButton').addEventListener('click', () => $('#logoutDialog').showModal());
+  $('#confirmLogout').addEventListener('click', async (event) => {
     await withBusy(event.currentTarget, async () => {
       state.demoUser = '';
-      persist();
+      state.demoId = '';
+      localStorage.removeItem(STORAGE_KEY);
+      $('#logoutDialog').close();
       updateLoginUI();
-      showView('profile');
-      notify('Local preview session closed.', 'success');
+      notify('Local demo session ended.', 'success');
     });
   });
 }
 
 function updateLoginUI() {
-  $('#loginButton').hidden = Boolean(state.demoUser);
-  $('#logoutButton').hidden = !state.demoUser;
+  const signedIn = Boolean(state.demoId);
+  $('#publicLanding').hidden = signedIn;
+  $('#appShell').hidden = !signedIn;
+  $('#headerLoginButton').hidden = signedIn;
+  $('#loginButton').hidden = signedIn;
+  $('#logoutButton').hidden = !signedIn;
+  $('#menuButton').hidden = !signedIn;
+  $('#sessionLabel').textContent = signedIn ? `Demo: ${state.demoUser}` : '';
+  $('#adminNav').hidden = true;
+  $('#companyNav').hidden = true;
+  if (signedIn) showView('profile');
 }
 
+
+if (state.demoId) {
+  try { loadDemoAccount(state.demoId, state.demoUser); }
+  catch (error) { state.demoId = ''; state.demoUser = ''; localStorage.removeItem(STORAGE_KEY); }
+}
 bindEvents();
 renderProfile();
 renderWallet();
